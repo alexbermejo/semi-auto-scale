@@ -6,7 +6,8 @@ function App() {
   const [image, setImage] = useState(null); //displayed image
   const [start, setStart] = useState(null);
   const [rect, setRect] = useState(null);
-  const [imageData, setImageData] = useState(null)
+  const [imageData, setImageData] = useState(null);
+  const [result, setResult] = useState(null);
   const canvasRef = useRef();
   const imgRef = useRef();
   const scaleRef = useRef(1);
@@ -84,8 +85,6 @@ function App() {
     // post data to obtain scale
     if (!rect || !imageData) return;
 
-    const scale = scaleRef.current;
-
     try {
       const response = await fetch('http://localhost:5050/auto-scale', {
         method: 'POST',
@@ -100,6 +99,7 @@ function App() {
       });
 
       const json = await response.json();
+      setResult(json);
       console.log('Server result:', json);
     } catch (error) {
       console.error('Error:', error);
@@ -110,6 +110,7 @@ function App() {
       <div style={{padding: '20px'}}>
         <h1>Auto Scale Detector</h1>
         <input type="file" accept="image/*" onChange={handleImageUpload} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem'  }}>
         <div style={{ marginTop: '20px' }}>
           <canvas ref={canvasRef}
                   style={{ border: '1px solid black', display: 'block' }}
@@ -118,12 +119,35 @@ function App() {
                     onMouseUp={onMouseUp}/>
           {rect && (
               <div>
+                {/*
                 <p>
                   Selection: X={Math.round(rect.x/scaleRef.current)}, Y={Math.round(rect.y/scaleRef.current)}, {Math.round(rect.width/scaleRef.current)}x{Math.round(rect.height/scaleRef.current)} px
                 </p>
+                */}
                 <button onClick={sendToServer}>Get scale</button>
               </div>
           )}
+        </div>
+          <div>
+          {result && !result.error && (
+              <div>
+              <h3>Processed Result</h3>
+                <p>
+                  Detected Text: <strong>{result.ocr}</strong><br />
+                  Detected Number: {result.number}<br />
+                  Pixel Length: {result.pixels} px<br />
+                  Scale: <strong>{result.scale} {result.unit}/px</strong>
+                </p>
+                {result.image && (
+                    <img src={result.image} alt="Detected scale bar" style={{ maxWidth: '100%', border: '1px solid #ccc' }} />
+                )}
+              </div>
+          )}
+
+          {result?.error && (
+              <p style={{ color: 'red' }}> {result.error}</p>
+          )}
+        </div>
         </div>
       </div>
   );
