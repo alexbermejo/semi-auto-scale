@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/semi-auto-scale.iml" filepath="$PROJECT_DIR$/semi-auto-scale.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frontend/semi-auto-scale.iml" filepath="$PROJECT_DIR$/frontend/semi-auto-scale.iml" />
     </modules>
   </component>
 </project>
