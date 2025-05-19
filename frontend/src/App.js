@@ -8,6 +8,7 @@ function App() {
   const [rect, setRect] = useState(null);
   const [imageData, setImageData] = useState(null);
   const [result, setResult] = useState(null);
+  const [invertImage, setInvertImage] = useState(false);
   const canvasRef = useRef();
   const imgRef = useRef();
   const scaleRef = useRef(1);
@@ -94,7 +95,8 @@ function App() {
           x: Math.round(rect.x/scaleRef.current),
           y: Math.round(rect.y/scaleRef.current),
           width: Math.round(rect.width/scaleRef.current),
-          height: Math.round(rect.height/scaleRef.current)
+          height: Math.round(rect.height/scaleRef.current),
+          invert: invertImage
         })
       });
 
@@ -125,6 +127,14 @@ function App() {
                 </p>
                 */}
                 <button onClick={sendToServer}>Get scale</button>
+                <label>
+                  <input
+                      type="checkbox"
+                      checked={invertImage}
+                      onChange={(e) => setInvertImage(e.target.checked)}
+                  />
+                  Invert image (white background, black scale)
+                </label>
               </div>
           )}
         </div>

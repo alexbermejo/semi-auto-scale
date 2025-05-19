@@ -20,6 +20,7 @@ def auto_scale():
         w = int(data['width'])
         h = int(data['height'])
         image_base64 = data['image']
+        invert = data['invert']
 
         # Convert to numpy
         image_data = image_base64.split(',')[1]
@@ -34,6 +35,10 @@ def auto_scale():
         crop = img[y:y+h, x:x+w]
 
         grayscale = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) #mandatory grayscale for thresholding
+        if invert:
+            # if background is clear (white)
+            grayscale = cv2.bitwise_not(grayscale)
+
         #object to be found must be white, no black scales
         _, binary = cv2.threshold(grayscale, 200, 255, cv2.THRESH_BINARY) #binary img
         contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -41,7 +46,7 @@ def auto_scale():
         for cnt in contours:
             rx, ry, rw, rh = cv2.boundingRect(cnt) #countour bounding boxes
             # Search for horizontal countors not comprising the whole image (borders)
-            if rw / rh > 2 and w*0.99 > rw:
+            if rw / rh > 3 and w*0.99 > rw:
                 # OCR (Tesseract)
                 config = '--psm 6 -c tessedit_char_whitelist=0123456789unµ.'
                 ocr_result = pytesseract.image_to_string(grayscale, config=config)
